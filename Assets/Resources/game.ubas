@@ -157,19 +157,58 @@ map$ = map$ + "888888888888888888888888888888888888888888888888888888888888"
 DO
     CLS 0
 
-    ' --- input ---
-    IF KEY(KEY_LEFT%)  OR KEY(ASC("A")) THEN px% = px% - 1
-    IF KEY(KEY_RIGHT%) OR KEY(ASC("D")) THEN px% = px% + 1
-    IF KEY(KEY_UP%)  OR KEY(ASC("W")) THEN py% = py% - 1
-    IF KEY(KEY_DOWN%) OR KEY(ASC("S")) THEN py% = py% + 1
+    MOVED% = 0
+    BLOCKED% = 0
 
-    IF px% < 1 THEN px% = 1
-    IF px% > GW%-2 THEN px% = GW%-2
-    IF py% < 1 THEN py% = 1
-    IF py% > GH%-2 THEN py% = GH%-2
+    ' --- input ---
+    IF KEY(KEY_LEFT%) OR KEY(ASC("A")) THEN
+        px% = px% - 1
+        MOVED% = 1
+    END IF
+
+    IF MOVED% = 0 AND (KEY(KEY_RIGHT%) OR KEY(ASC("D"))) THEN
+        px% = px% + 1
+        MOVED% = 1
+    END IF
+
+    IF MOVED% = 0 AND (KEY(KEY_UP%)  OR KEY(ASC("W"))) THEN
+        py% = py% - 1
+        MOVED% = 1
+    END IF
+
+    IF MOVED% = 0 AND (KEY(KEY_DOWN%) OR KEY(ASC("S"))) THEN
+        py% = py% + 1
+        MOVED% = 1
+    END IF
+
+    ' disable diagonal movement
+
+    ' hit wall
+    IF px% < 1 THEN 
+        px% = 1
+        BLOCKED% = 1
+    END IF
+
+    IF px% > GW%-2 THEN 
+        px% = GW%-2
+        BLOCKED% = 1
+    END IF
+
+    IF py% < 1 THEN 
+        py% = 1
+        BLOCKED% = 1
+    END IF
+
+    IF py% > GH%-2 THEN 
+        py% = GH%-2
+        BLOCKED% = 1
+    END IF
 
     DrawMap 0, 0, 60, 40, map$
     DrawPlayer(px%, py%)
+    
+    IF BLOCKED% = 0 AND MOVED% = 1 THEN SOUND 10+RND(100),0.1
+    IF BLOCKED% = 1 THEN SOUND RND(80),0.5
+
     WAIT
-    'BEEP
 LOOP
