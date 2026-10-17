@@ -65,7 +65,7 @@ img$ = img$ + "..E...E...E...E.E....E...E.."
 img$ = img$ + "..6...666.6...6.6....666.666"
 
 ' settings
-SHOW_INTRO% = 0
+SHOW_INTRO% = 1
 DIM SHARED ENEMY_RANGE%
 ENEMY_RANGE% = 7
 
@@ -95,7 +95,7 @@ if SHOW_INTRO% = 1 THEN
         PSET (0, y%), 0
         PSET (W%-1, y%), 0
         'WAIT
-        SOUND 220-y%, 0.11
+        IF y% MOD 2 = 0 THEN SOUND 220-y%, 0.05
     NEXT y%
 END IF
 
@@ -116,7 +116,7 @@ COLOR 15, 0
 px% = 1
 py% = GH%/2-1
 DIM SHARED php%
-php% = 10
+php% = 4
 
 ' goal
 DIM SHARED trx%, try%, got_treasure%
@@ -125,8 +125,8 @@ try% = GH%/2+6
 got_treasure% = 0
 
 ' test
-trx% = 3
-try% = py%
+'trx% = 3
+'try% = py%
 
 DIM SHARED goalx%, goaly%, goal_reached%
 goalx% = px%
@@ -207,7 +207,7 @@ map$ = map$ + "80000000000000000000000000000000000000000000000000008"
 map$ = map$ + "88888888888888888888888888888888888888888888888888888"
 
 CLS 0
-'DrawMap 0, 0, 60, 40, map$
+DrawMap 0, 0, 53, map$
 
 SUB UpdateEnemies(px%,py%)
     FOR i% = 0 TO ecount% - 1
@@ -301,7 +301,7 @@ if SHOW_INTRO% = 1 THEN
 END IF
 
 ' enemies
-CONST ecount% = 10
+CONST ecount% = 16
 
 DIM SHARED ex%(ecount%), ey%(ecount%), ehp%(ecount%)
 ' initial positions
@@ -460,8 +460,8 @@ SUB DRAWGAMEOVER
 END SUB
 
 ' test
-php% = 0
-goal_reached% = 0
+'php% = 0
+'goal_reached% = 0
 
 ' game finished
 IF php%>0 AND goal_reached%>0 THEN

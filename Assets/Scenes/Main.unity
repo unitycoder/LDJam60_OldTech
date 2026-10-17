@@ -250,11 +250,11 @@ MonoBehaviour:
   EnableSound: 1
   Volume: 0.1
   PrewarmNotes: 1
-  ScheduledAudio: 1
+  ScheduledAudio: 0
   InstructionBudget: 512000
   GcThreshold: 512
   RestartOnEnable: 1
-  TargetFrameRate: 60
+  TargetFrameRate: 24
 --- !u!4 &1616204279
 Transform:
   m_ObjectHideFlags: 0

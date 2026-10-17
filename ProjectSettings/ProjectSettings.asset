@@ -313,7 +313,14 @@ PlayerSettings:
   androidAdaptiveIconVectorDrawableMonochrome: {fileID: 0}
   androidAdaptiveBannerVectorDrawableBackground: {fileID: 0}
   androidAdaptiveBannerVectorDrawableForeground: {fileID: 0}
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: 267d0471d0d35ff45afa732e74635cf4, type: 3}
+      m_Width: 128
+      m_Height: 128
+      m_Kind: 0
   m_BuildTargetPlatformIcons: []
   m_BuildTargetBatching: []
   m_UseLegacyStaticBatchingDefault: 0
@@ -327,7 +334,9 @@ PlayerSettings:
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
   m_TemplateCustomTags:
+    HIDE_FULL_SCREEN_BUTTON: 
     PRIMARY_DATA_FILES: 
+    PRODUCT_DESCRIPTION: 
     SECONDARY_DATA_FILES: 
   mobileMTRendering:
     Android: 1
@@ -594,7 +603,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:Default
+  webGLTemplate: PROJECT:Better2020
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 1
