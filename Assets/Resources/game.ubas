@@ -1,9 +1,5 @@
 ' LDJAM 60 : Old Tech
 ' Snake Temple
-' Player needs to get the treasure from the temple, but the temple is guarded by snakes. The player needs to avoid the snakes and get the treasure.
-' Can also kill snakes by hitting them (moving over them on your movement tick)
-' HP: gain hp from potions?
-' snake spawners?
 
 W% = 60
 H% = 40
