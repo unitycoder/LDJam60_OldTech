@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "com.unity.ide.visualstudio": "2.0.28",
+    "com.unity.ugui": "2.7.0",
+    "com.unitycoder.essentials": "https://github.com/unitycoder/UnityEditorEssentials.git",
+    "com.unitycoder.ubasic": "https://github.com/unitycoder/uBasic.git?path=/Packages/com.unitycoder.ubasic",
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.modules.physicscore2d": "1.0.0",
+    "com.unity.modules.ui": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0"
+  }
+}
