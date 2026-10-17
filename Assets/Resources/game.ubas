@@ -195,7 +195,7 @@ CLS 0
 
 SUB UpdateEnemies(px%,py%)
     FOR i% = 0 TO ecount% - 1
-        ' if dead
+        ' if dead them dont move
         IF ehp%(i%) <= 0 THEN
             'COLOR 8, 0
             'LOCATE ey%(i%), ex%(i%) : PRINT "!";
@@ -204,21 +204,33 @@ SUB UpdateEnemies(px%,py%)
             dx% = px% - ex%(i%)
             dy% = py% - ey%(i%)
 
+            ' movable value
+            mx% = 0
+            my% = 0
+
             ' player is in range, move towards player
             if ABS(dx%) <= ENEMY_RANGE% AND ABS(dy%) <= ENEMY_RANGE% THEN
+                ' if x distance is greater than y distance, move in x direction, else move in y direction
                 IF ABS(dx%) > ABS(dy%) THEN
-                    IF dx% > 0 THEN ex%(i%) = ex%(i%) + 1: ELSE ex%(i%) = ex%(i%) - 1
+                    'IF dx% > 0 THEN ex%(i%) = ex%(i%) + 1: ELSE ex%(i%) = ex%(i%) - 1
+                    IF dx% > 0 THEN mx%= 1: ELSE mx% = -1
                 ELSE
-                    IF dy% > 0 THEN ey%(i%) = ey%(i%) + 1: ELSE ey%(i%) = ey%(i%) - 1
+                    'IF dy% > 0 THEN ey%(i%) = ey%(i%) + 1: ELSE ey%(i%) = ey%(i%) - 1
+                    IF dy% > 0 THEN my%= 1: ELSE my% = -1
                 END IF
             ELSE
                 ' player is out of range, move randomly
                 IF RND(100) < 50 THEN
-                    ex%(i%) = ex%(i%) + (RND(3) - 1) ' move left/right randomly
+                    mx% = (RND(3) - 1)
+                    'ex%(i%) = ex%(i%) + mx% ' move left/right randomly
                 ELSE
-                    ey%(i%) = ey%(i%) + (RND(3) - 1) ' move up/down randomly
+                    my% = (RND(3) - 1)
+                    'ey%(i%) = ey%(i%) + my% ' move up/down randomly
                 END IF
             END IF
+
+            ex%(i%) = ex%(i%) + mx%
+            ey%(i%) = ey%(i%) + my%
 
             ' clamp to play area
             IF ex%(i%)<1 THEN ex%(i%) = 1
@@ -228,12 +240,10 @@ SUB UpdateEnemies(px%,py%)
 
             ' check collision to obstacles in map (only 0 is walkable)
             IF MID$(map$, ex%(i%) + ey%(i%) * 53 + 1, 1) <> "0" THEN
+                PRINT "HIT";
                 ' move back to previous position
-                IF ABS(dx%) > ABS(dy%) THEN
-                    IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
-                ELSE
-                    IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
-                END IF
+                ex%(i%) = ex%(i%) - mx%
+                ey%(i%) = ey%(i%) - my%
             END IF
 
             ' check collision with player
@@ -246,11 +256,8 @@ SUB UpdateEnemies(px%,py%)
                 IF i% <> j% THEN
                     IF ex%(i%) = ex%(j%) AND ey%(i%) = ey%(j%) THEN
                         ' move back to previous position
-                        IF ABS(dx%) > ABS(dy%) THEN
-                            IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
-                        ELSE
-                            IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
-                        END IF
+                        ex%(i%) = ex%(i%) - mx%
+                        ey%(i%) = ey%(i%) - my%
                     END IF
                 END IF
             NEXT
@@ -353,6 +360,7 @@ DO
         LOCATE GH%-1, GW%-16 : PRINT " Treasure Found!";
     END IF
 
+    ' update objects
     DrawMap 0, 0, 53, map$
     if (MOVED% = 1) THEN UpdateEnemies(px%, py%)
     DrawEnemies
@@ -367,9 +375,10 @@ DO
         COLOR 12, 0
         LOCATE GH%-1, GW%-13 : PRINT "Killed snake!";
     END IF
+
     IF got_treasure% = 1 THEN
         got_treasure% = 2
-        PLAY "MB T160 O1 L4 CDECDEFAFA"
+        PLAY "MB T160 O2 L8 CDECFE"
     END IF
 
     WAIT
