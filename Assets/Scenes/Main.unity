@@ -251,7 +251,7 @@ MonoBehaviour:
   Volume: 0.1
   PrewarmNotes: 1
   ScheduledAudio: 1
-  InstructionBudget: 200000
+  InstructionBudget: 512000
   GcThreshold: 512
   RestartOnEnable: 1
   TargetFrameRate: 24
