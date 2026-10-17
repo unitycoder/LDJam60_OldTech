@@ -63,7 +63,7 @@ img$ = img$ + "..E...E.4.E...E.E....E...E.."
 img$ = img$ + "..E...E...E...E.E....E...E.."
 img$ = img$ + "..6...666.6...6.6....666.666"
 
-SHOW_INTRO% = 0
+SHOW_INTRO% = 1
 
 if SHOW_INTRO% = 1 THEN
     ' start menu music
@@ -78,21 +78,25 @@ if SHOW_INTRO% = 1 THEN
     NEXT i%
 
     ' fake loader
-    FOR i% = 0 TO 16
+    FOR i% = 0 TO 8
         SOUND 10+RND(100), RND
         FOR x% = 0 TO W%
           PSET (0, RND(H%)), RND(15)
           PSET (W%-1, RND(H%)), RND(15)
         NEXT x%
     NEXT i%
+    ' clear borders
     FOR y% = 0 TO H%
         PSET (0, y%), 0
         PSET (W%-1, y%), 0
-        WAIT
+        'WAIT
+        SOUND 220-y%, 0.11
     NEXT y%
 END IF
 
 CLS 0
+
+
 ' game
 W% = 320
 H% = 220
@@ -101,6 +105,8 @@ GH% = 220/8 ' = ~27.5
 SCREEN W%, H%
 COLOR 15, 0
 
+
+
 px% = 1
 py% = GH%/2
 
@@ -108,7 +114,6 @@ SUB DrawPlayer(px%, py%)
   COLOR 15, 0
   LOCATE py%, px% : PRINT "@";
 END SUB
-
 
 ' uBasic Paint · 60x40 · HEX
 DIM SHARED map$
@@ -153,6 +158,14 @@ map$ = map$ + "800000000000000000000000000000000000000000000000000000000008"
 map$ = map$ + "800000000000000000000000000000000000000000000000000000000008"
 map$ = map$ + "888888888888888888888888888888888888888888888888888888888888"
 
+CLS 0
+DrawMap 0, 0, 60, 40, map$
+
+' 1s delay
+SOUND 32000, 18.2
+PLAY "T160 O1 L4 CDECDEFAFA"
+SOUND 666,0.33
+DrawPlayer(px%, py%)
 
 DO
     CLS 0
