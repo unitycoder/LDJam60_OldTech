@@ -124,6 +124,11 @@ trx% = GW%-8
 try% = GH%/2+6
 got_treasure% = 0
 
+DIM SHARED goalx%, goaly%, goal_reached%
+goalx% = px%
+goaly% = py%
+goal_reached% = 0
+
 SUB DrawPlayer(px%, py%)
   COLOR 15, 0
   LOCATE py%, px% : PRINT "@";
@@ -138,7 +143,7 @@ SUB UI
       LOCATE GH%-1, GW%-15 : PRINT " Find Treasure!";
   ELSE
       COLOR 0,14
-      LOCATE GH%-1, GW%-16 : PRINT " Treasure Found!";
+      LOCATE GH%-1, GW%-12 : PRINT " Go to Exit!";
   END IF
 END SUB
 
@@ -158,6 +163,13 @@ SUB DrawTreasure
         LOCATE GH%-1, 10 : PRINT "$";
         COLOR 7, 0
         LOCATE GH%-1, 11 : PRINT "]";
+    END IF
+END SUB
+
+SUB DrawGoal
+    IF got_treasure%>0 AND goal_reached% = 0 THEN
+        COLOR 9, 0
+        LOCATE goaly%, goalx% : PRINT "<";
     END IF
 END SUB
 
@@ -240,7 +252,6 @@ SUB UpdateEnemies(px%,py%)
 
             ' check collision to obstacles in map (only 0 is walkable)
             IF MID$(map$, ex%(i%) + ey%(i%) * 53 + 1, 1) <> "0" THEN
-                PRINT "HIT";
                 ' move back to previous position
                 ex%(i%) = ex%(i%) - mx%
                 ey%(i%) = ey%(i%) - my%
@@ -360,11 +371,21 @@ DO
         LOCATE GH%-1, GW%-16 : PRINT " Treasure Found!";
     END IF
 
+    ' check collision to exit
+    IF goal_reached% = 0 AND got_treasure%>0 AND px% = goalx% AND py% = goaly% THEN
+        goal_reached% = 1
+        COLOR 14, 0
+        LOCATE GH%-1, GW%-16 : PRINT " Goal Reached!";
+        PLAY "MB T160 O2 L8 CDECFE"
+        ' TODO end game screen
+    END IF
+
     ' update objects
     DrawMap 0, 0, 53, map$
     if (MOVED% = 1) THEN UpdateEnemies(px%, py%)
     DrawEnemies
     DrawTreasure
+    DrawGoal
     DrawPlayer(px%, py%)
     UI
     
