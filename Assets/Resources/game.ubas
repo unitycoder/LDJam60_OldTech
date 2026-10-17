@@ -112,8 +112,17 @@ GH% = H%/8
 SCREEN W%, H%
 COLOR 15, 0
 
+' player data
 px% = 1
 py% = GH%/2-1
+DIM SHARED php%
+php% = 10
+
+' goal
+DIM SHARED trx%, try%, got_treasure%
+trx% = GW%-8
+try% = GH%/2+6
+got_treasure% = 0
 
 SUB DrawPlayer(px%, py%)
   COLOR 15, 0
@@ -122,12 +131,34 @@ END SUB
 
 SUB UI
   COLOR 7, 0
-  LOCATE GH%-1, 0 : PRINT "HP: 10";
+  LOCATE GH%-1, 0 : PRINT "HP:";php%;
 
-'  COLOR 2,0
-'  LOCATE GH%-1, GW%-5-6 : PRINT "Snake";
-'  COLOR 14,0
-'  LOCATE GH%-1, GW%-6 : PRINT "Temple";
+  IF got_treasure%=0 THEN
+      COLOR 0,6
+      LOCATE GH%-1, GW%-15 : PRINT " Find Treasure!";
+  ELSE
+      COLOR 0,14
+      LOCATE GH%-1, GW%-16 : PRINT " Treasure Found!";
+  END IF
+END SUB
+
+SUB DrawTreasure
+    IF got_treasure% = 0 THEN
+        COLOR 14, 0
+        LOCATE try%, trx% : PRINT "$";
+
+        COLOR 7, 0
+        LOCATE GH%-1, 9 : PRINT "[";
+        COLOR 7, 0
+        LOCATE GH%-1, 11 : PRINT "]";
+    ELSE ' in inventory
+        COLOR 7, 0
+        LOCATE GH%-1, 9 : PRINT "[";
+        COLOR 14, 0
+        LOCATE GH%-1, 10 : PRINT "$";
+        COLOR 7, 0
+        LOCATE GH%-1, 11 : PRINT "]";
+    END IF
 END SUB
 
 ' uBasic Paint · 53x26 · HEX
@@ -164,66 +195,77 @@ CLS 0
 
 SUB UpdateEnemies(px%,py%)
     FOR i% = 0 TO ecount% - 1
-        ' calculate distance to player
-        dx% = px% - ex%(i%)
-        dy% = py% - ey%(i%)
-
-        ' player is in range, move towards player
-        if ABS(dx%) <= ENEMY_RANGE% AND ABS(dy%) <= ENEMY_RANGE% THEN
-            IF ABS(dx%) > ABS(dy%) THEN
-                IF dx% > 0 THEN ex%(i%) = ex%(i%) + 1: ELSE ex%(i%) = ex%(i%) - 1
-            ELSE
-                IF dy% > 0 THEN ey%(i%) = ey%(i%) + 1: ELSE ey%(i%) = ey%(i%) - 1
-            END IF
+        ' if dead
+        IF ehp%(i%) <= 0 THEN
+            'COLOR 8, 0
+            'LOCATE ey%(i%), ex%(i%) : PRINT "!";
         ELSE
-            ' player is out of range, move randomly
-            IF RND(100) < 50 THEN
-                ex%(i%) = ex%(i%) + (RND(3) - 1) ' move left/right randomly
+            ' calculate distance to player
+            dx% = px% - ex%(i%)
+            dy% = py% - ey%(i%)
+
+            ' player is in range, move towards player
+            if ABS(dx%) <= ENEMY_RANGE% AND ABS(dy%) <= ENEMY_RANGE% THEN
+                IF ABS(dx%) > ABS(dy%) THEN
+                    IF dx% > 0 THEN ex%(i%) = ex%(i%) + 1: ELSE ex%(i%) = ex%(i%) - 1
+                ELSE
+                    IF dy% > 0 THEN ey%(i%) = ey%(i%) + 1: ELSE ey%(i%) = ey%(i%) - 1
+                END IF
             ELSE
-                ey%(i%) = ey%(i%) + (RND(3) - 1) ' move up/down randomly
-            END IF
-        END IF
-
-        ' clamp to play area
-        IF ex%(i%)<1 THEN ex%(i%) = 1
-        IF ex%(i%)>GW%-2 THEN ex%(i%) = GW%-2
-        IF ey%(i%)<1 THEN ey%(i%) = 1
-        IF ey%(i%)>GH%-2 THEN ey%(i%) = GH%-2
-
-        ' check collision to obstacles in map (only 0 is walkable)
-        IF MID$(map$, ex%(i%) + ey%(i%) * 53 + 1, 1) <> "0" THEN
-            ' move back to previous position
-            IF ABS(dx%) > ABS(dy%) THEN
-                IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
-            ELSE
-                IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
-            END IF
-        END IF
-
-        ' TODO check collision with player
-
-        ' check collision with other enemies
-        FOR j% = 0 TO ecount% - 1
-            IF i% <> j% THEN
-                IF ex%(i%) = ex%(j%) AND ey%(i%) = ey%(j%) THEN
-                    ' move back to previous position
-                    IF ABS(dx%) > ABS(dy%) THEN
-                        IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
-                    ELSE
-                        IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
-                    END IF
+                ' player is out of range, move randomly
+                IF RND(100) < 50 THEN
+                    ex%(i%) = ex%(i%) + (RND(3) - 1) ' move left/right randomly
+                ELSE
+                    ey%(i%) = ey%(i%) + (RND(3) - 1) ' move up/down randomly
                 END IF
             END IF
-        NEXT
 
-        COLOR 12, 0
-        LOCATE ey%(i%), ex%(i%) : PRINT "S";
+            ' clamp to play area
+            IF ex%(i%)<1 THEN ex%(i%) = 1
+            IF ex%(i%)>GW%-2 THEN ex%(i%) = GW%-2
+            IF ey%(i%)<1 THEN ey%(i%) = 1
+            IF ey%(i%)>GH%-2 THEN ey%(i%) = GH%-2
+
+            ' check collision to obstacles in map (only 0 is walkable)
+            IF MID$(map$, ex%(i%) + ey%(i%) * 53 + 1, 1) <> "0" THEN
+                ' move back to previous position
+                IF ABS(dx%) > ABS(dy%) THEN
+                    IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
+                ELSE
+                    IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
+                END IF
+            END IF
+
+            ' check collision with player
+            IF ex%(i%) = px% AND ey%(i%) = py% THEN
+                php% = php% - 1
+            END IF
+
+            ' check collision with other enemies
+            FOR j% = 0 TO ecount% - 1
+                IF i% <> j% THEN
+                    IF ex%(i%) = ex%(j%) AND ey%(i%) = ey%(j%) THEN
+                        ' move back to previous position
+                        IF ABS(dx%) > ABS(dy%) THEN
+                            IF dx% > 0 THEN ex%(i%) = ex%(i%) - 1: ELSE ex%(i%) = ex%(i%) + 1
+                        ELSE
+                            IF dy% > 0 THEN ey%(i%) = ey%(i%) - 1: ELSE ey%(i%) = ey%(i%) + 1
+                        END IF
+                    END IF
+                END IF
+            NEXT
+
+            COLOR 12, 0
+            LOCATE ey%(i%), ex%(i%) : PRINT "S";
+        END IF
     NEXT
 END SUB
 
 SUB DrawEnemies
     FOR i% = 0 TO ecount% - 1
-        COLOR 2, 0
+        COL% = 2
+        IF ehp%(i%) <= 0 THEN COL% = 4
+        COLOR COL%, 0
         LOCATE ey%(i%), ex%(i%) : PRINT "s";
     NEXT
 END SUB
@@ -238,11 +280,13 @@ END IF
 
 ' enemies
 CONST ecount% = 10
-DIM SHARED ex%(ecount%), ey%(ecount%)
+
+DIM SHARED ex%(ecount%), ey%(ecount%), ehp%(ecount%)
 ' initial positions
 FOR i% = 0 TO ecount% - 1
     ex%(i%) = (GW%/2)+RND(GW%/2-4)
     ey%(i%) = 1+RND(GH%-3)
+    ehp%(i%) = 1
 NEXT
 
 
@@ -292,14 +336,41 @@ DO
         BLOCKED% = 1
     END IF
 
+    KILLED_ENEMY% = 0
+    ' check collision with enemies
+    FOR i% = 0 TO ecount% - 1
+        IF px% = ex%(i%) AND py% = ey%(i%) AND ehp%(i%) > 0 THEN
+            ' player hits enemy first
+            KILLED_ENEMY% = 1
+            ehp%(i%) = ehp%(i%) - 1
+        END IF
+    NEXT
+
+    ' check collision to treasure
+    IF got_treasure% = 0 AND px% = trx% AND py% = try% THEN
+        got_treasure% = 1
+        COLOR 14, 0
+        LOCATE GH%-1, GW%-16 : PRINT " Treasure Found!";
+    END IF
+
     DrawMap 0, 0, 53, map$
     if (MOVED% = 1) THEN UpdateEnemies(px%, py%)
     DrawEnemies
+    DrawTreasure
     DrawPlayer(px%, py%)
     UI
     
     IF BLOCKED% = 0 AND MOVED% = 1 THEN SOUND 10+RND(100),0.1
     IF BLOCKED% = 1 THEN SOUND RND(80),0.5
+    IF KILLED_ENEMY% = 1 THEN
+        SOUND 100+RND(100),0.5
+        COLOR 12, 0
+        LOCATE GH%-1, GW%-13 : PRINT "Killed snake!";
+    END IF
+    IF got_treasure% = 1 THEN
+        got_treasure% = 2
+        PLAY "MB T160 O1 L4 CDECDEFAFA"
+    END IF
 
     WAIT
 LOOP
