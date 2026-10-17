@@ -240,7 +240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f87ab0dcfe56e880e4f423f1318c696f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unitycoder.UBasic.Unity::Unitycoder.UBasic.UBasicRunner
-  SourceFile: {fileID: 0}
+  SourceFile: {fileID: 9027929339269108002, guid: 07ff70f29d605b94cb6f8d5cb7980835, type: 3}
+  AutoReloadInEditor: 1
   Source: "SCREEN 320, 200\nDIM t%\nDO\n  CLS 1\n  CIRCLE (160 + CINT(SIN(t% / 12.0) * 90), 100), 20, 14, F\n  LOCATE 0, 0\n  PRINT \"hello from uBasic\"\n  t% = t% + 1\n  WAIT\nLOOP\n"
   ScreenWidth: 320
   ScreenHeight: 200
